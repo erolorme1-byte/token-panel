@@ -1,40 +1,24 @@
 const express = require("express");
-const axios = require("axios");
 const router = express.Router();
+const axios = require("axios");
 
-// /api/token/:address
-router.get("/:address", async (req, res) => {
+// Token bilgilerini dönen API
+router.get("/", async (req, res) => {
   try {
-    const tokenAddress = req.params.address.toLowerCase();
+    // Örnek token bilgisi
+    const data = {
+      name: "MyToken",
+      symbol: "MYT",
+      priceUSD: 0.00123,
+      liquidity: 5230,
+      marketCap: 154000,
+      volume24h: 10230
+    };
 
-    const url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
-    const resp = await axios.get(url);
-
-    if (!resp.data || !resp.data.pairs || resp.data.pairs.length === 0) {
-      return res.status(404).json({ error: "Token pair not found" });
-    }
-
-    const pair = resp.data.pairs[0]; // ilk pair bilgisi
-
-    res.json({
-      address: tokenAddress,
-      chainId: pair.chainId,
-      dexId: pair.dexId,
-      pairAddress: pair.pairAddress,
-
-      priceUsd: pair.priceUsd,
-      priceNative: pair.priceNative,
-
-      liquidityUsd: pair.liquidity?.usd,
-      liquidityBase: pair.liquidity?.base,
-      liquidityQuote: pair.liquidity?.quote,
-
-      volume24h: pair.volume?.h24,
-      fdv: pair.fdv,
-    });
+    return res.json(data);
   } catch (err) {
-    console.error("TOKEN API ERROR:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Token API hatası:", err);
+    res.status(500).json({ error: "Token verisi alınırken hata oluştu" });
   }
 });
 
